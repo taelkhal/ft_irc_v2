@@ -314,6 +314,7 @@ void Server::handleClientData(int fd) {
                                 for (size_t i = 0; i < it_1->second.size(); ++i) 
                                 {
                                     // Check if the user is the admin of the channel
+                                    std::cout << "name:" << it_1->second[i] << std::endl;
                                     if (it_1->second[i][0] == '@' && it_1->second[i].substr(1) == user_c) 
                                     {
                                         std::cout << user_c << " is an admin" << std::endl;
@@ -332,15 +333,26 @@ void Server::handleClientData(int fd) {
 
                     // Construct names message based on user role
                     // NAMES_MESSAGE2(nickname, channelName) (":irc.l9oroch 353 " + nickname + " @ #" + channelName + " :")
-                    std::string namesMessage;
-                    if (is_admin == true) 
+                    std::map<std::string, std::vector<std::string> >::iterator it_1 = channel.find(channelname);
+                    std::string namesMessage = ":irc.ChatWladMinah 353 " + user_c +  " = " + channelname + " :";
+                    std::vector<std::string>::iterator it_v;
+                    for (it_v = it_1->second.begin(); it_v != it_1->second.end(); it_v++)
                     {
-                        namesMessage = ":irc.ChatWladMinah 353 " + user_c +  " = " + channelname + " :@" + user_c + "\r\n";
-                    } 
-                    else 
-                    {
-                        namesMessage = ":irc.ChatWladMinah 353 " + user_c +  " = " + channelname + " :" + user_c + "\r\n";
+                        
+                        if (is_admin == true) 
+                        {
+
+                            namesMessage += "@" + *it_v;
+                        } 
+                        else 
+                        {
+                            namesMessage += *it_v;
+                        }
+                        if (it_v < it_1->second.end() - 1)
+                            namesMessage += " ";
+                        
                     }
+                    namesMessage += "\n";
 
                     std::string endOfNamesMessage = ":irc.ChatWladMina 366 " + user_c + " " + channelname + " :End of /NAMES list.\r\n";
                     std::string channelMessage = ":irc.ChatWladMina 354 " + channelname + "\r\n";
@@ -663,7 +675,7 @@ void Server::sendMessageToChannel(const std::string& channell, const std::string
         for (size_t i = 0; i < fds.size(); ++i) 
         {
             int user = fds[i];
-            // if (fd_u != fds[i])
+            if (fd_u != fds[i])
                 sendMessageToUser(user, message);
         }
 
