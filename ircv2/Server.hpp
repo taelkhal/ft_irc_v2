@@ -70,6 +70,7 @@ class Server {
         std::string constructCreationTimeMessage(const std::string& channelName);
         std::string formatCreationTime();
         void ping(const std::string& command, int fd);
+        void kick_memeber(std::string &channel_kicked_from, std::string &user_kicked);
         
 };
 

@@ -189,43 +189,7 @@ void Server::handleClientData(int fd) {
                     nickname = nickname.substr(0, nickname.size() - 1);
                     std::cout << "nickmok-->" << nickname << std::endl;
                     users_fd[nickname].push_back(fd);
-                    // std::map<std::string, std::vector<int> >::iterator it;
-                    // for (it = users_fd.begin(); it != users_fd.end(); ++it)
-                    // {
-                    //     std::cout << "Nickname: " << it->first << std::endl;
-                    //     std::cout << "File Descriptors: ";
-                    //     std::vector<int>::iterator vec_it;
-                    //     for (vec_it = it->second.begin(); vec_it != it->second.end(); ++vec_it)
-                    //     {
-                    //         std::cout << *vec_it << " ";
-                    //     }
-                    //     std::cout << std::endl;
-                    // }
-                    // std::map<std::string, std::vector<int> >::iterator it = users_fd.begin();
-                    // std::vector<int>::iterator itt = it->second.begin();
-                    // for (; itt != it->second.end(); itt++)
-                    //     std::cout << "voilá:" << *itt;
-                    // printf("\n\n\n\n");
-                    // exit(1);
-                    // std::vector<int>::iterator it1;
-                    // std::string user_c;
-                    // int i = 1;
-                    // if (i == 0)
-                    // {
-                    //     for(it1 = it->second.begin(); it1 != it->second.end(); it1++)
-                    //     {
-                    //         // std::cout << "loop:hna f nick" << *it1 << " |the fd is: " << fd << std::endl;
-                    //         if (*it1 == fd)
-                    //         {
-                    //             user_c = it->first;
 
-                    //             // fd_u = fd;
-                    //         }
-                    //     }
-                    // }
-                    // set_fd_users(nickname, fd);
-
-                    // nicknames.push_back(nickname);
                     std::string msg = "Please Enter Your Username : \n";
                     send(fd, msg.c_str(), msg.size(), 0);
                 }
@@ -245,19 +209,6 @@ void Server::handleClientData(int fd) {
 
 
                     std::map<std::string, std::vector<int> >::iterator it;
-                    // for (it = users_fd.begin(); it != users_fd.end(); ++it)
-                    // {
-                    //     std::cout << "Nickname: " << it->first << std::endl;
-                    //     std::cout << "File Descriptors: ";
-                    //     std::vector<int>::iterator vec_it;
-                    //     for (vec_it = it->second.begin(); vec_it != it->second.end(); ++vec_it)
-                    //     {
-                    //         std::cout << *vec_it << " ";
-                    //     }
-                    //     std::cout << std::endl;
-                    // }
-
-                    // std::vector<int>::iterator itt = it->second.begin();
                     std::vector<int>::iterator it1;
                     std::string user_c;
                     for (it = users_fd.begin(); it != users_fd.end(); ++it)
@@ -265,11 +216,9 @@ void Server::handleClientData(int fd) {
                         std::vector<int>::iterator vec_it;
                         for(vec_it = it->second.begin(); vec_it != it->second.end(); ++vec_it)
                         {
-                            // std::cout << "loop:" << *it1 << " |the fd is: " << fd << std::endl;
                             if (*vec_it == fd)
                             {
                                 user_c = it->first;
-                                // fd_u = fd;
                             }
                         }
                     }
@@ -326,31 +275,20 @@ void Server::handleClientData(int fd) {
                             break;
                         }
                     }
-
-                    // Construct join messages
                     std::string joinMessage = ":" + user_c + " JOIN " + channelname + "\r\n";
                     std::string modeMessage = ":irc.ChatWladMina MODE " + channelname + " +nt\r\n";
 
-                    // Construct names message based on user role
-                    // NAMES_MESSAGE2(nickname, channelName) (":irc.l9oroch 353 " + nickname + " @ #" + channelName + " :")
                     std::map<std::string, std::vector<std::string> >::iterator it_1 = channel.find(channelname);
                     std::string namesMessage = ":irc.ChatWladMinah 353 " + user_c +  " = " + channelname + " :";
                     std::vector<std::string>::iterator it_v;
                     for (it_v = it_1->second.begin(); it_v != it_1->second.end(); it_v++)
                     {
-                        
                         if (is_admin == true) 
-                        {
-
                             namesMessage += "@" + *it_v;
-                        } 
                         else 
-                        {
                             namesMessage += *it_v;
-                        }
                         if (it_v < it_1->second.end() - 1)
                             namesMessage += " ";
-                        
                     }
                     namesMessage += "\n";
 
@@ -365,102 +303,6 @@ void Server::handleClientData(int fd) {
                     send(fd, channelMessage.c_str(), channelMessage.length(), 0);
                 }
             }
-
-            // else if (command.substr(0, 5) == "join " || command.substr(0, 5) == "JOIN ") {
-            //     std::string channelname;
-
-            //     size_t space_pos = command.find(' ');
-            //     if (space_pos != std::string::npos) {
-            //         channelname = command.substr(space_pos + 1);
-            //         channelname = channelname.substr(0, channelname.size() - 1);
-
-            //         std::string user_c;
-            //         for (std::map<std::string, std::vector<int> >::iterator it = users_fd.begin(); it != users_fd.end(); ++it) {
-            //             std::vector<int>::iterator vec_it = std::find(it->second.begin(), it->second.end(), fd);
-            //             if (vec_it != it->second.end()) {
-            //                 user_c = it->first;
-            //                 break;
-            //             }
-            //         }
-
-            //         create_channel(channelname, user_c, fd);
-
-            //         std::string joinMessage = ":" + user_c + " JOIN " + channelname + "\n";
-            //         std::string modeMessage = ":irc.ChatWladMina MODE " + channelname + " +nt\n";
-            //         std::string namesMessage = ":irc.ChatWladMinah 353 " + user_c +  " = " + channelname + " :" + user_c + "\n";
-            //         std::string endOfNamesMessage = ":irc.ChatWladMina 366 " + user_c + " " + channelname + " :End of /NAMES list.\n";
-            //         std::string channelMessage = ":irc.ChatWladMina 354 " + channelname + "\n";
-
-            //         send(fd, joinMessage.c_str(), joinMessage.length(), 0);
-            //         send(fd, modeMessage.c_str(), modeMessage.length(), 0);
-            //         send(fd, namesMessage.c_str(), namesMessage.length(), 0);
-            //         send(fd, endOfNamesMessage.c_str(), endOfNamesMessage.length(), 0);
-            //         send(fd, channelMessage.c_str(), channelMessage.length(), 0);
-            //     }
-            // }
-
-            // else if (command.substr(0, 5) == "join " || command.substr(0, 5) == "JOIN ")
-            // {
-            //     std::string channelname;
-
-            //     size_t space_pos = command.find(' ');
-            //     if (space_pos != std::string::npos)
-            //     {
-            //         // std::map<std::string, std::vector<int> >::iterator it;
-            //         // std::vector<std::string>::iterator it1;
-            //         // it = users_fd.begin();
-            //         // it1 = nicknames.begin();
-            //         channelname = command.substr(space_pos + 1);
-            //         channelname = channelname.substr(0, channelname.size() - 1);
-            //         // std::cout << "nick_here-->>" << nick_n << std::endl;
-            //         std::map<std::string, std::vector<int> >::iterator it;
-            //         std::string user_c;
-            //         for (it = users_fd.begin(); it != users_fd.end(); ++it)
-            //         {
-            //             std::vector<int>::iterator vec_it;
-            //             for(vec_it = it->second.begin(); vec_it != it->second.end(); ++vec_it)
-            //             {
-            //                 // std::cout << "loop:" << *it1 << " |the fd is: " << fd << std::endl;
-            //                 if (*vec_it == fd)
-            //                 {
-            //                     user_c = it->first;
-            //                     // fd_u = fd;
-            //                 }
-            //             }
-            //         }
-            //         create_channel(channelname, user_c, fd);
-
-            //         // std::string creationTimeMessage = constructCreationTimeMessage(channelname);
-            //         std::string joinMessage = ":" + user_c + " JOIN " + channelname + "\n";
-            //         std::string modeMessage = ":irc.ChatWladMina MODE " + channelname + " +nt\n";
-            //         std::string namesMessage = ":irc.ChatWladMinah 353 " + user_c +  " = " + channelname + " :@" + user_c + "\n";
-            //         std::string endOfNamesMessage = ":irc.ChatWladMina 366 " + user_c + " " + channelname + " :End of /NAMES list.\n";
-            //         std::string channelMessage = ":irc.ChatWladMina 354 " + channelname + "\n";
-                    
-            //         send(fd, joinMessage.c_str(), joinMessage.length(), 0);
-            //         send(fd, modeMessage.c_str(), modeMessage.length(), 0);
-            //         send(fd, namesMessage.c_str(), namesMessage.length(), 0);
-            //         send(fd, endOfNamesMessage.c_str(), endOfNamesMessage.length(), 0);
-            //         send(fd, channelMessage.c_str(), channelMessage.length(), 0);
-            //         // std::map<std::string, std::vector<std::string> >::iterator it;
-            //         // it = channel.begin();
-                    
-            //         // send_msg(channelname);
-            //         // channels::creat_channel()
-            //         // if (channel.find(channelname) == channel.end())
-            //         // {
-            //         //     std::cout <<  it->first << std::endl;
-            //         //     std::cout << user_c << std::endl;
-            //         //     std::string admin_user = '@' + user_c;
-            //         //     std::cout << admin_user << std::endl;
-            //         //     channels[channelname].push_back(admin_user); //join the channel as admin
-            //         //     // std::vector<std::string> users;
-            //         //     // channels[channelname] = users;
-            //         // }
-            //         // else
-            //         //     channels[channelname].push_back(user_c);
-            //     }
-            // }
             else if (command.substr(0, 7) == "privmsg" || command.substr(0, 7) == "PRIVMSG")
             {
                 std::string p_msg;
@@ -473,45 +315,32 @@ void Server::handleClientData(int fd) {
                     processMessage(command, fd);
                 }
             }
-            // else if (command.substr(0, 5) == "PRIVMSG " || command.substr(0, 5) == "privmsg ")
-            // {
-            //     // std::cout << "hello" << std::endl;
-            //     std::string p_msg;
+            else if (command.substr(0, 5) == "kick " || command.substr(0, 5) == "KICK ")
+            {
+                std::string p_msg;
 
-            //     size_t space_pos = command.find(' ');
-            //     if (space_pos != std::string::npos)
-            //     {
-            //         p_msg = command.substr(space_pos + 1);
-            //         p_msg = p_msg.substr(0, p_msg.size() - 1);
-            //         Server::processMessage(p_msg);
-                //     std::istringstream iss(p_msg);
-                //     std::map<std::string, std::vector<int> >::iterator it = users_fd.begin();
-                //     std::vector<int>::iterator it1;
-                //     std::string cmd, recipient, message;
-                //     std::string user_name;
-
-                //     for(it1 = it->second.begin(); it1 != it->second.end(); it1++)
-                //     {
-                //         if (*it1 == fd)
-                //         {
-                //             user_name = it->first;
-                //         }
-                //     }
-                //     std::cout << user_name << std::endl;
-                //     send_msg(user_name);
-                    
-                    // int fd_u = get_fd_users(user_name);
-
-                    // iss >> cmd >> recipient;
-                    // std::getline(iss, p_msg);
-
-                    // std::string messa = ":" + user_name + " PRIVMSG #" + this->channel_n + " :" + p_msg + "\r\n";
-                    // send(fd_u, messa.c_str(), messa.size(), 0);
-
-                // }
-                // std::map<std::string, std::vector<std::string> >::iterator it;
-                // it = channel.begin();
-            // }
+                size_t space_pos = command.find(' ');
+                if (space_pos != std::string::npos)
+                {
+                    p_msg = command.substr(space_pos + 1);
+                    p_msg = p_msg.substr(0, p_msg.size() - 1);
+                }
+                std::istringstream iss(command);
+                std::string command, target, text;
+                // Parse the message
+                iss >> command;
+                // Check the command type
+                // std::cout << "command :"  <<command << "." << std::endl;
+                // if (command == "privmsg" || command == "PRIVMSG") {
+                    // Extract the target channel and message text
+                iss >> target;
+                std::getline(iss, text); // Read the rest of the line as message text
+                text = text.substr(1);
+                text = text.substr(0, text.size() - 3);
+                std::cout << "command kick : " << command << std::endl;
+                std::cout << "user kick : " << text << '.' << std::endl;
+                kick_memeber(target, text);
+            }
             break;
         }
     }
@@ -602,7 +431,6 @@ void Server::processMessage(const std::string& message, int fd)
     std::getline(iss, text); // Read the rest of the line as message text
     text = text.substr(1);   // Remove leading space
     // Now you have the target channel and message text
-    std::cout << text << std::endl;
     
 
     //find nick name
@@ -637,19 +465,16 @@ void Server::processMessage(const std::string& message, int fd)
             }
         }
     }
-    std::cout << "hadauser-->"<< user_c << std::endl;
+    text = text.substr(0, text.size() - 1);
     std::string tmp_mess = ":" + user_c + " PRIVMSG " + target + " " + text + "\r\n";
     sendMessageToChannel(target, tmp_mess);
 }
 
 void Server::sendMessageToChannel(const std::string& channell, const std::string& message) 
 {
-    // Check if the channel exists
-    // std::cout << channell << std::endl;
-    // exit (0);
 
     std::map<std::string, std::vector<std::string> >::iterator it;
-    it = channel.find("#team");
+    it = channel.find(channell);
     std::cout << "here" << std::endl;
     if(it == channel.end())
     {
@@ -661,15 +486,7 @@ void Server::sendMessageToChannel(const std::string& channell, const std::string
     }
     else
     {
-        // Retrieve the list of users in the channel
-        // const std::vector<int>& users = channel[channell];
-        std::vector<int> fds = send_msg("#team");
-        // for (std::vector<int>::iterator it = fds.begin(); it != fds.end(); it++)
-        // {
-        //     std::cout << *it << std::endl;
-
-        // }
-        // printf("---------------fin-------------------\n");
+        std::vector<int> fds = send_msg(channell);
         std::vector<int>::iterator in;
 
         for (size_t i = 0; i < fds.size(); ++i) 
@@ -684,7 +501,7 @@ void Server::sendMessageToChannel(const std::string& channell, const std::string
 
 void Server::sendMessageToUser(int user, const std::string& message) 
 {
-    std::cout << "message22222--->" << message << std::endl;
+    // std::cout << "message22222--->" << message << std::endl;
     send(user, message.c_str(), message.size(), 0);
     std::cout << "Sending message to user '" << user << "': " << message ;
 }

@@ -14,6 +14,23 @@
 //         // return false;
 //     }
 // }
+void Server::kick_memeber(std::string &channel_kicked_from, std::string &user_kicked)
+{
+    std::map<std::string, std::vector<std::string> >::iterator it = channel.find(channel_kicked_from);
+    std::vector<std::string>::iterator it1;
+    for(it1 = it->second.begin(); it1 != it->second.end(); it1++)
+    {
+        std::cout << "*it1 :" << *it1 << std::endl;
+        std::cout << "user_kicked :" << user_kicked << std::endl;
+        if(*it1 == user_kicked)
+        {
+            std::cout << "kick function x" << std::endl; 
+            it->second.erase(it1);
+            break;
+        }
+        
+    }
+}
 
 void Server::create_channel(const std::string &channel_name, const std::string& user_name, int fd)
 {
