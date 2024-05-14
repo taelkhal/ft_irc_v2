@@ -14,24 +14,37 @@
 //         // return false;
 //     }
 // }
-void Server::kick_memeber(std::string &channel_kicked_from, std::string &user_kicked)
+void Server::kick_memeber(std::string &channel_kicked_from, std::string &user_kicked, std::string reason, int fd)
 {
     std::map<std::string, std::vector<std::string> >::iterator it = channel.find(channel_kicked_from);
     std::vector<std::string>::iterator it1;
+    int k = 0;
+
     for(it1 = it->second.begin(); it1 != it->second.end(); it1++)
     {
         std::cout << "*it1 :" << *it1 << std::endl;
         std::cout << "user_kicked :" << user_kicked << std::endl;
         if(*it1 == user_kicked)
         {
-            std::cout << "kick function x" << std::endl; 
+            std::cout << "kick function x" << std::endl;
+            k = 1;
             it->second.erase(it1);
+            std::string kick_msg = ":" + admin + " KICK " + channel_kicked_from + " " + user_kicked + " :" + reason + "\n";
+            // std::string kick_msg2 = ":" + channels[channelName].getNickname(fd) + " KICK #" + channelName + " " + userToKick + " :" + reason + "\n")
+            send(fd, kick_msg.c_str(), kick_msg.size(), 0);
+            int fd_kicked = get_fd_users(user_kicked);
+            send(fd_kicked, kick_msg.c_str(), kick_msg.size(), 0);
             break;
+            //admin can kick him self but with @
         }
-        
     }
+    if(k == 0)
+    {
+        std::string user_not_found = ":" + admin + " PRIVMSG " + channel_kicked_from + " :Error: the user : " + user_kicked + " is not found or offline.\r\n";
+        send(fd, user_not_found.c_str(), user_not_found.size(), 0);
+    }
+    
 }
-
 void Server::create_channel(const std::string &channel_name, const std::string& user_name, int fd)
 {
     std::map<std::string, std::vector<std::string> >::iterator it = channel.find(channel_name);
@@ -44,6 +57,7 @@ void Server::create_channel(const std::string &channel_name, const std::string& 
     else
     {
         channel[channel_name].push_back(user_name);
+
         std::cout << "channel already exists" << std::endl;
     }
 }

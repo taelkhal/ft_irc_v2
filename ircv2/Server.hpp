@@ -30,7 +30,9 @@ class Server {
         int _serverSocketFd;
         std::string av;
         int fd_u;
+        std::string admin;
         std::string user_n;
+        
         std::string nick_n;
         static bool _signal;
         std::string _password;
@@ -43,6 +45,7 @@ class Server {
     public:
         Server();
         ~Server();
+        std::string user_n1;
 
         void parseArgs(int ac, char **av);
         static void receiveSignal(int signum);
@@ -70,7 +73,7 @@ class Server {
         std::string constructCreationTimeMessage(const std::string& channelName);
         std::string formatCreationTime();
         void ping(const std::string& command, int fd);
-        void kick_memeber(std::string &channel_kicked_from, std::string &user_kicked);
+        void kick_memeber(std::string &channel_kicked_from, std::string &user_kicked, std::string reason, int fd);
         
 };
 

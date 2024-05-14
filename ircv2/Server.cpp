@@ -153,6 +153,7 @@ void Server::handleClientData(int fd) {
             
             // std::string user_c;
             this->fd_u = fd;
+            bool is_admin = false;
             // std::string savenick;
             // std::cout << "fd_u" << fd_u << std::endl;
             if (command.substr(0, 5) == "pass " || command.substr(0, 5) == "PASS ")
@@ -235,7 +236,7 @@ void Server::handleClientData(int fd) {
                     channelname = channelname.substr(0, channelname.size() - 1);
 
                     std::string user_c;
-                    bool is_admin = false;
+                    // bool is_admin = false;
 
                     // Find the username associated with the file descriptor
                     for (std::map<std::string, std::vector<int> >::iterator it = users_fd.begin(); it != users_fd.end(); ++it) 
@@ -268,6 +269,7 @@ void Server::handleClientData(int fd) {
                                     {
                                         std::cout << user_c << " is an admin" << std::endl;
                                         is_admin = true;
+                                        this->admin = user_c;
                                         break;
                                     }
                                 }
@@ -326,20 +328,28 @@ void Server::handleClientData(int fd) {
                     p_msg = p_msg.substr(0, p_msg.size() - 1);
                 }
                 std::istringstream iss(command);
-                std::string command, target, text;
+                std::string command, channel_kicked_from, user_kicked, reason;
                 // Parse the message
                 iss >> command;
                 // Check the command type
                 // std::cout << "command :"  <<command << "." << std::endl;
                 // if (command == "privmsg" || command == "PRIVMSG") {
                     // Extract the target channel and message text
-                iss >> target;
-                std::getline(iss, text); // Read the rest of the line as message text
-                text = text.substr(1);
-                text = text.substr(0, text.size() - 3);
+                iss >> channel_kicked_from;
+                iss >> user_kicked;
+                std::getline(iss, reason); // Read the rest of the line as message text
+                reason = reason.substr(1);
+                reason = reason.substr(0, reason.size());
                 std::cout << "command kick : " << command << std::endl;
-                std::cout << "user kick : " << text << '.' << std::endl;
-                kick_memeber(target, text);
+                std::cout << "bool : " << is_admin << '.' << std::endl;
+                // if (is_admin == true)
+                kick_memeber(channel_kicked_from, user_kicked, reason, fd);
+                // else
+                // {
+                //     std::string not_admin = ":" + user_kicked + " PRIVMSG " + channel_kicked_from + " :Error1: You are not authorized to execute this command " + user_kicked + "\r\n";
+                //     send(fd, not_admin.c_str(), not_admin.size(), 0);
+                // }
+
             }
             break;
         }
