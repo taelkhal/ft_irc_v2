@@ -18,6 +18,16 @@ std::string Server::get_av()
     return this->av;
 }
 
+void Server::set_admin(std::string admin)
+{
+    this->admin = admin;
+}
+
+std::string Server::get_admin()
+{
+    return this->admin;
+}
+
 void Server::parseArgs(int ac, char **av) {
     if (ac != 3)
         throw std::runtime_error("Usage: ./ircserv <port> <password>");
@@ -270,6 +280,7 @@ void Server::handleClientData(int fd) {
                                         std::cout << user_c << " is an admin" << std::endl;
                                         is_admin = true;
                                         this->admin = user_c;
+                                        set_admin(user_c);
                                         break;
                                     }
                                 }
@@ -343,12 +354,42 @@ void Server::handleClientData(int fd) {
                 std::cout << "command kick : " << command << std::endl;
                 std::cout << "bool : " << is_admin << '.' << std::endl;
                 // if (is_admin == true)
-                kick_memeber(channel_kicked_from, user_kicked, reason, fd);
-                // else
-                // {
-                //     std::string not_admin = ":" + user_kicked + " PRIVMSG " + channel_kicked_from + " :Error1: You are not authorized to execute this command " + user_kicked + "\r\n";
-                //     send(fd, not_admin.c_str(), not_admin.size(), 0);
-                // }
+                std::cout << "admin :"  << get_admin() << std::endl;
+                if(user_kicked != get_admin())
+                {
+                    kick_memeber(channel_kicked_from, user_kicked, reason, fd);
+                }
+                else
+                {
+                    std::string not_admin = ":" + user_kicked + " PRIVMSG " + channel_kicked_from + " You are not authorized to execute this command kick admin " + user_kicked + "\r\n";
+                    send(fd, not_admin.c_str(), not_admin.size(), 0);
+                }
+
+            }
+            else if(command.substr(0, 7) == "invite " || command.substr(0, 7) == "INVITE ")
+            {
+                std::string invite;
+
+                size_t space_pos = command.find(' ');
+                if (space_pos != std::string::npos)
+                {
+                    invite = command.substr(space_pos + 1);
+                    invite = invite.substr(0, invite.size() - 1);
+
+                    std::istringstream iss(command);
+                    std::string command, channel_invited_from, user_invited;
+
+                    iss >> command;
+                    iss >> user_invited;
+                    iss >> channel_invited_from;
+                    std::cout << "user_invited :" << user_invited << "."  << std::endl;
+                    std::cout << "channel invited  from :" << channel_invited_from << "."  << std::endl;
+
+                    std::string invite_msg = ":" + get_admin() + " INVITE " + user_invited + " :" + channel_invited_from + "\r\n";
+                    int invited_fd = get_fd_users(user_invited);
+                    send(fd, invite_msg.c_str(), invite_msg.size(), 0);
+                    send(invited_fd, invite_msg.c_str(), invite_msg.size(), 0);
+                }
 
             }
             break;

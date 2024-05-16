@@ -74,6 +74,8 @@ class Server {
         std::string formatCreationTime();
         void ping(const std::string& command, int fd);
         void kick_memeber(std::string &channel_kicked_from, std::string &user_kicked, std::string reason, int fd);
+        void set_admin(std::string admin);
+        std::string get_admin();
         
 };
 

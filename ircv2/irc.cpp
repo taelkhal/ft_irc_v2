@@ -20,11 +20,12 @@ void Server::kick_memeber(std::string &channel_kicked_from, std::string &user_ki
     std::vector<std::string>::iterator it1;
     int k = 0;
 
+
     for(it1 = it->second.begin(); it1 != it->second.end(); it1++)
     {
         std::cout << "*it1 :" << *it1 << std::endl;
         std::cout << "user_kicked :" << user_kicked << std::endl;
-        if(*it1 == user_kicked)
+        if(*it1 == user_kicked && user_kicked[0] != '@')
         {
             std::cout << "kick function x" << std::endl;
             k = 1;
@@ -40,7 +41,7 @@ void Server::kick_memeber(std::string &channel_kicked_from, std::string &user_ki
     }
     if(k == 0)
     {
-        std::string user_not_found = ":" + admin + " PRIVMSG " + channel_kicked_from + " :Error: the user : " + user_kicked + " is not found or offline.\r\n";
+        std::string user_not_found = ":" + admin + " PRIVMSG " + channel_kicked_from + " the user : " + user_kicked + " not member of this channel.\r\n";
         send(fd, user_not_found.c_str(), user_not_found.size(), 0);
     }
     
